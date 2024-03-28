@@ -9,12 +9,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "expo": "^50.0.1",
     "expo-constants": "~15.4.5",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.3",
     "expo-splash-screen": "~0.26.3",
     "expo-status-bar": "~1.11.1",
+    "express": "^4.19.2",
+    "mongodb": "^6.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.73.2",
