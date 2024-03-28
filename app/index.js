@@ -59,39 +59,44 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.label}>First Name</Text>
             <TextInput
-                style={styles.input}
-                placeholder="First Name"
+                style={[styles.input, firstName ? styles.filledInput : null]}
+                placeholder="Enter First Name"
                 onChangeText={text => setFirstName(text)}
                 value={firstName}
             />
+            <Text style={styles.label}>Last Name</Text>
             <TextInput
-                style={styles.input}
-                placeholder="Last Name"
+                style={[styles.input, lastName ? styles.filledInput : null]}
+                placeholder="Enter Last Name"
                 onChangeText={text => setLastName(text)}
                 value={lastName}
             />
+            <Text style={styles.label}>Username</Text>
             <TextInput
-                style={styles.input}
-                placeholder="Username"
+                style={[styles.input, username ? styles.filledInput : null]}
+                placeholder="Enter Username"
                 onChangeText={text => setUsername(text)}
                 value={username}
             />
+            <Text style={styles.label}>Email</Text>
             <TextInput
-                style={styles.input}
-                placeholder="Email"
+                style={[styles.input, email ? styles.filledInput : null]}
+                placeholder="Enter Email"
                 onChangeText={text => setEmail(text)}
                 value={email}
             />
+            <Text style={styles.label}>Password</Text>
             <TextInput
-                style={styles.input}
-                placeholder="Password"
+                style={[styles.input, password ? styles.filledInput : null]}
+                placeholder="Enter Password"
                 onChangeText={text => setPassword(text)}
                 value={password}
                 secureTextEntry
             />
             <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-                <Text style={styles.buttonText}>Sign Up</Text>
+                <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
         </View>
     );
@@ -102,7 +107,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.lightWhite,
+        backgroundColor: 'black', // Change background color to black
+    },
+    label: {
+        color: 'white', // Change label text color to white
+        fontSize: SIZES.body3,
+        marginBottom: 5, // Add margin bottom to labels for spacing
     },
     input: {
         width: '80%',
@@ -112,17 +122,22 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 20,
         paddingHorizontal: 10,
+        color: 'white', // Default text color is white
+    },
+    filledInput: {
+        backgroundColor: 'white', // Background color changes to white when filled
+        color: 'black', // Text color changes to black when filled
     },
     button: {
         width: '80%',
         height: 40,
-        backgroundColor: COLORS.primary,
+        backgroundColor: '#CD85F0', // Change button color to light purple
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 8,
     },
     buttonText: {
-        color: COLORS.white,
+        color: 'black', // Change button text color to black
         fontSize: SIZES.body3,
     },
 });
