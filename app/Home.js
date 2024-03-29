@@ -2,7 +2,10 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
 
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
+
 const HomeScreen = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Hello, World!</Text>
