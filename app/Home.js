@@ -1,10 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Hello, World!</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <Text style={{ color: "blue", marginTop: 20 }}>Go to Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
