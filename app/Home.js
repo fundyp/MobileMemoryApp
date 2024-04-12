@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import MapView from "react-native-maps";
 import { useRoute } from "@react-navigation/native";
 
 const Home = () => {
@@ -9,7 +10,16 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello {firstName || "User"}!</Text>
+      <Text style={styles.text}>Welcome {firstName || "User"}!</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 37.78825,
+          longitude: -122.4324,
+          latitudeDelta: 0.5, // Adjust the latitudeDelta to zoom out further
+          longitudeDelta: 0.5, // Adjust the longitudeDelta to zoom out further
+        }}
+      />
     </View>
   );
 };
@@ -24,6 +34,10 @@ const styles = StyleSheet.create({
   text: {
     color: "white", // Change text color to white
     fontSize: 24, // Adjust font size as needed
+  },
+  map: {
+    width: "95%",
+    height: "50%",
   },
 });
 
