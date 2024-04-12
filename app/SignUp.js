@@ -8,40 +8,53 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import { COLORS, SIZES } from "../constants"; // Import your constants from the correct path
+import { COLORS, SIZES } from "../constants";
 
 const apiURL = "https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api";
 
-const Login = () => {
+const SignUp = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigation = useNavigation();
 
-  const goToHomePage = (userId, firstName) => {
-    navigation.navigate("Home", { userId, firstName }); // Pass userId and firstName to Home screen
-  };
-
-  const handleSignIn = async () => {
-    if (email && password) {
+  const goToHome = async () => {
+    if (firstName && lastName && username && email && password) {
       try {
-        const response = await fetch(apiURL + "/login", {
+        const response = await fetch(apiURL + "/createuser", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            login: email,
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
             password: password,
           }),
         });
         const data = await response.json();
         if (response.ok) {
-          Alert.alert("Success", "Sign-In successful!");
+          Alert.alert("Success", "Sign-up successful!");
+          setFirstName("");
+          setLastName("");
+          setUsername("");
           setEmail("");
           setPassword("");
-          goToHomePage(data.userId, data.firstName); // Pass userId and firstName to Home screen
+          // go to home and pass down userID and the first name that was inserted (not retrieved from database)
+          navigation.navigate("Home", {
+            userId: data.userId,
+            firstName: firstName,
+          });
         } else {
-          Alert.alert("Error", data.error || "Sign-in failed. Please try again.");
+          Alert.alert(
+            "Error",
+            data.error || "Sign-up failed. Please try again."
+          );
         }
       } catch (error) {
         Alert.alert("Error", "An error occurred. Please try again later.");
@@ -54,6 +67,27 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>First Name</Text>
+      <TextInput
+        style={[styles.input, firstName ? styles.filledInput : null]}
+        placeholder="Enter First Name"
+        onChangeText={(text) => setFirstName(text)}
+        value={firstName}
+      />
+      <Text style={styles.label}>Last Name</Text>
+      <TextInput
+        style={[styles.input, lastName ? styles.filledInput : null]}
+        placeholder="Enter Last Name"
+        onChangeText={(text) => setLastName(text)}
+        value={lastName}
+      />
+      <Text style={styles.label}>Username</Text>
+      <TextInput
+        style={[styles.input, username ? styles.filledInput : null]}
+        placeholder="Enter Username"
+        onChangeText={(text) => setUsername(text)}
+        value={username}
+      />
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={[styles.input, email ? styles.filledInput : null]}
@@ -69,20 +103,8 @@ const Login = () => {
         value={password}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={goToHomePage}>
-        <Text
-          style={{
-            color: "#CD85F0",
-            marginTop: 20,
-            textDecorationLine: "underline",
-          }}
-        >
-          Sign-Up
-        </Text>
+      <TouchableOpacity style={styles.button} onPress={goToHome}>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -93,12 +115,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black", // Change background color to black
+    backgroundColor: "black",
   },
   label: {
-    color: "white", // Change label text color to white
+    color: "white",
     fontSize: SIZES.body3,
-    marginBottom: 5, // Add margin bottom to labels for spacing
+    marginBottom: 5,
   },
   input: {
     width: "80%",
@@ -108,24 +130,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 20,
     paddingHorizontal: 10,
-    color: "white", // Default text color is white
+    color: "white",
   },
   filledInput: {
-    backgroundColor: "white", // Background color changes to white when filled
-    color: "black", // Text color changes to black when filled
+    backgroundColor: "white",
+    color: "black",
   },
   button: {
     width: "80%",
     height: 40,
-    backgroundColor: "#CD85F0", // Change button color to light purple
+    backgroundColor: "#CD85F0",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
   },
   buttonText: {
-    color: "black", // Change button text color to black
+    color: "black",
     fontSize: SIZES.body3,
   },
 });
 
-export default Login;
+export default SignUp;
