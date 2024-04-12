@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -16,19 +15,15 @@ const apiURL = "https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const navigation = useNavigation();
 
-  const goToHomePage = () => {
-    navigation.navigate("SignUp"); // Navigate to the 'Profile' screen
+  // Function to navigate to Home screen with user's first name as parameter
+  const goToHomePage = (firstName) => {
+    navigation.navigate("Home", { firstName });
   };
 
+  // Function to handle sign-in
   const handleSignIn = async () => {
-    // Log the data before sending
-    console.log("Data to be sent:", {
-      email: email,
-      password: password,
-    });
     if (email && password) {
       try {
         const response = await fetch(apiURL + "/login", {
@@ -44,16 +39,15 @@ const Login = () => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert("Success", "Sign-In successful!");
+
           // Clear input fields after sign-up
           setEmail("");
           setPassword("");
 
-          navigation.navigate("Home");
+          // Call goToHomePage with user's first name
+          goToHomePage(data.firstName);
         } else {
-          Alert.alert(
-            "Error",
-            data.error || "Sign-up failed. Please try again."
-          );
+          Alert.alert("Error", data.error || "Sign-in failed. Please try again.");
         }
       } catch (error) {
         Alert.alert("Error", "An error occurred. Please try again later.");
