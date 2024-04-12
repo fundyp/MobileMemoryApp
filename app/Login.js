@@ -79,7 +79,7 @@ const Login = () => {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={goToHomePage}>
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
         <Text
           style={{
             color: "#CD85F0",
