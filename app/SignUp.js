@@ -106,6 +106,15 @@ const SignUp = () => {
       <TouchableOpacity style={styles.button} onPress={goToHome}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
+
+      <View style={styles.signInContainer}>
+        <Text style={styles.signInText}>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={[styles.signInLink, {color: "#CD85F0"}]}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
+    
+      
     </View>
   );
 };
@@ -147,6 +156,17 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "black",
     fontSize: SIZES.body3,
+  },
+  signInContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  signInText: {
+    color: "white",
+    fontSize: SIZES.body3,
+  },
+  signInLink: {
+    textDecorationLine: "underline",
   },
 });
 

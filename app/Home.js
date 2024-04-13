@@ -21,7 +21,7 @@ const Home = () => {
 
   const menuItems = [
     { id: 1, title: "Sign Out", onPress: handleSignOut },
-    // Add more menu items here if need be
+    // Add more menu items here if needed
   ];
 
   return (
@@ -33,10 +33,9 @@ const Home = () => {
             style={styles.menuIcon}
           />
         </TouchableOpacity>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>{firstName}'s Memory Map</Text>
+        <View style={styles.actionBarTextContainer}>
+          <Text style={styles.actionBarText}>{firstName}'s Memory Map</Text>
         </View>
-        
       </View>
       {showMenu && (
         <View style={styles.dropdown}>
@@ -56,8 +55,8 @@ const Home = () => {
         initialRegion={{
           latitude: 28.6024,
           longitude: -81.2001,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 10,
+          longitudeDelta: 10,
         }}
       />
     </View>
@@ -72,10 +71,9 @@ const styles = StyleSheet.create({
   actionBar: {
     backgroundColor: "#553A65",
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   menuIcon: {
     width: 24,
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: "absolute",
-    top: 50,
+    top: 60,
     right: 10,
     backgroundColor: "white",
     borderRadius: 8,
@@ -96,27 +94,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
   },
-  header: {
+  actionBarTextContainer: {
+    flex: 1,
     alignItems: "center",
-    marginVertical: 10,
-  },
-  headerText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   actionBarText: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
-    marginVertical: 10,
     textAlign: "center",
   },
   map: {
     flex: 0.7,
     marginHorizontal: 5,
-    marginVertical: 10,
+    marginVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
   },

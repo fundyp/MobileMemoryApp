@@ -79,17 +79,12 @@ const Login = () => {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-        <Text
-          style={{
-            color: "#CD85F0",
-            marginTop: 20,
-            textDecorationLine: "underline",
-          }}
-        >
-          Sign-Up
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.signUpContainer}>
+        <Text style={styles.signUpText}>Dont Have An Account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+          <Text style={[styles.signUpLink, {color: "#CD85F0"}]}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -131,6 +126,17 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "black", // Change button text color to black
     fontSize: SIZES.body3,
+  },
+  signUpContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  signUpText: {
+    color: "white",
+    fontSize: SIZES.body3,
+  },
+  signUpLink: {
+    textDecorationLine: "underline",
   },
 });
 
