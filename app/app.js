@@ -1,22 +1,30 @@
-import * as React from "react";
-import { Button, View, Text } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./Home";
-import LoginScreen from "./Login";
-import SignUpScreen from "./SignUp";
+import React, {useEffect, useState} from "react";
+import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import Login from "./Login"; // Import Login Component
+import Home from "./Home"; // Import Home component
+import SignUp from "./SignUp"; // Import SignUp component
 
 const Stack = createNativeStackNavigator();
-function App() {
+
+export default function App(){
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Login" componet={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Navigator>
+        <Stack.Screen 
+          name="Login" 
+          component={Login}
+          options={{
+            title: "Login Screen"
+          }} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
-export default App;

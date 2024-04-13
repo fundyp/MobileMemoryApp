@@ -8,7 +8,7 @@ import {
   Alert,
   StyleSheet,
 } from "react-native";
-import { COLORS, SIZES } from "../constants"; // Import your constants from the correct path
+import { COLORS, SIZES } from "../constants"; // Import constants
 
 const apiURL = "https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api";
 

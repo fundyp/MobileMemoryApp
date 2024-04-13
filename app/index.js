@@ -1,5 +1,4 @@
-import React from "react";
 import { AppRegistry } from "react-native";
-import App from "./app";
+import Login from "./Login"; // Assuming Login.js is located in the app folder
 
-AppRegistry.registerComponent("MyApp", () => App);
+AppRegistry.registerComponent("MyApp", () => Login); 
