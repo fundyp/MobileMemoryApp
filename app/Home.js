@@ -39,15 +39,11 @@ const Home = () => {
       </View>
       {showMenu && (
         <View style={styles.dropdown}>
-          <FlatList
-            data={menuItems}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={item.onPress}>
-                <Text style={styles.menuItem}>{item.title}</Text>
-              </TouchableOpacity>
-            )}
-          />
+          {menuItems.map((item) => (
+            <TouchableOpacity key={item.id} onPress={item.onPress}>
+              <Text style={styles.menuItem}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       )}
       <MapView
@@ -59,6 +55,17 @@ const Home = () => {
           longitudeDelta: 10,
         }}
       />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => console.log("Add pressed")}>
+          <Text style={styles.buttonText}>Add</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => console.log("Edit pressed")}>
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -66,14 +73,14 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#130F15",
   },
   actionBar: {
-    backgroundColor: "#553A65",
+    backgroundColor: "#331E3E",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
-    paddingVertical: 12,
+    paddingVertical: 15,
   },
   menuIcon: {
     width: 24,
@@ -82,12 +89,33 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: "absolute",
-    top: 60,
-    right: 10,
-    backgroundColor: "white",
-    borderRadius: 8,
+    top: 54,
+    left: 0,
+    width: "40%", // Adjust the width as needed
+    height: "20%", // Half of the screen height
+    backgroundColor: "#ABA2B0",
+    borderTopRightRadius: 1, // Sharper top right corner
+    borderBottomRightRadius: 12, // Sharper bottom right corner
+    borderTopLeftRadius: 1, // Rounded top left corner
+    borderBottomLeftRadius: 12, // Rounded bottom left corner
     elevation: 3,
     zIndex: 1000,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 10,
+  },
+  button: {
+    backgroundColor: "#A66CC3",
+    borderRadius: 6,
+    paddingHorizontal: 60,
+    paddingVertical: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   menuItem: {
     paddingHorizontal: 15,
@@ -105,11 +133,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   map: {
-    flex: 0.7,
+    flex: 0.8,
     marginHorizontal: 5,
     marginVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
+  },
+  signOutButton: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+  },
+  signOutText: {
+    color: "#A66CC3",
+    fontSize: 16,
+    textDecorationLine: "underline",
   },
 });
 
