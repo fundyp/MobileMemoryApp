@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Callout } from "react-native-maps"; // Import Callout from react-native-maps
 import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from 'axios';
 
@@ -14,8 +14,6 @@ const fetchLocations = async (username) => {
   }
 };
 
-
-
 const Home = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -23,12 +21,14 @@ const Home = () => {
 
   const [locations, setLocations] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
-  const [isAdding, setIsAdding] = useState(false); // Track if "Add" button is toggled on
-  const [selectedCoordinate, setSelectedCoordinate] = useState(null); // Track selected coordinates
+  const [isAdding, setIsAdding] = useState(false);
+  const [selectedCoordinate, setSelectedCoordinate] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [markerId, setMarkerId] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState(null); // State to track the selected marker
 
   const handleSignOut = () => {
     navigation.navigate("Login");
@@ -39,20 +39,31 @@ const Home = () => {
   };
 
   const handleUsernamePress = () => {
-    Alert.alert('Username', username); // Display the username in an alert box
+    Alert.alert('Username', username);
   };
 
   const toggleAdding = () => {
     setIsAdding(!isAdding);
-    setFormVisible(false); // Hide the form when toggling off "Add" button
+    setFormVisible(false);
   };
 
   const handleMapPress = (event) => {
-    if (isAdding) {
+    if (!isAdding) {
+      // Handle marker selection here
+      const selectedMarker = locations.find((location) => (
+        location.latitude === event.nativeEvent.coordinate.latitude.toString() &&
+        location.longitude === event.nativeEvent.coordinate.longitude.toString()
+      ));
+      if (selectedMarker) {
+        // Show popup when a marker is selected
+        Alert.alert('Marker Info', `ID: ${selectedMarker.id}, Title: ${selectedMarker.name}`);
+      }
+    } else {
+      // Handle adding new marker when isAdding is true
       setSelectedCoordinate(event.nativeEvent.coordinate);
       setLatitude(event.nativeEvent.coordinate.latitude.toString());
       setLongitude(event.nativeEvent.coordinate.longitude.toString());
-      setFormVisible(true); // Show the form when a spot is clicked
+      setFormVisible(true);
     }
   };
 
@@ -60,52 +71,57 @@ const Home = () => {
     try {
       const response = await axios.post('https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api/locations', {
         title,
-        username, // Use firstName from route.params as the username
+        username,
         latitude,
         longitude,
       });
+
+      const { message, markerId } = response.data;
+      console.log(message);
+      console.log(markerId);
       console.log('Location added:', response.data);
-      // Add any additional logic after successfully adding the location
-      setFormVisible(false); // Hide the form after confirmation
-      setTitle(""); // Clear the form fields
+
+      setMarkerId(markerId);
+
+      // Update locations after adding the new location
+      const updatedLocations = await fetchLocations(username);
+      setLocations(updatedLocations);
+
+      setFormVisible(false);
+      setTitle("");
       setLatitude(null);
       setLongitude(null);
       setSelectedCoordinate(null);
     } catch (error) {
       console.error('Error adding location:', error);
       if (error.response) {
-        // The request was made and the server responded with a status code
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('No response received:', error.request);
-      } else {
-        // Something happened in setting up the request that triggered an error
-        console.error('Error setting up the request:', error.message);
+        // Handle error
       }
     }
   };
+
   const handleCancel = () => {
-    // Remove the selected coordinate and close the form
     setFormVisible(false);
     setSelectedCoordinate(null);
+  };
+
+  const handleMarkerPress = (marker) => {
+    setSelectedMarker(marker); // Set the selected marker when it's pressed
   };
 
   const menuItems = [
     { id: 1, title: "Sign Out", onPress: handleSignOut },
     { id: 2, title: "Username", onPress: handleUsernamePress },
-    // Add more menu items here if needed
   ];
 
   useEffect(() => {
     const fetchLocationsData = async () => {
-      const fetchedLocations = await fetchLocations(username); // Use firstName as the username
+      const fetchedLocations = await fetchLocations(username);
       setLocations(fetchedLocations);
     };
 
     fetchLocationsData();
-  }, [username]);
+  }, [username, markerId]); // Include markerId in dependencies
 
   return (
     <View style={styles.container}>
@@ -148,13 +164,31 @@ const Home = () => {
             }}
             title={location.name}
             description={location.description}
-          />
+            onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
+          >
+            {selectedMarker && selectedMarker.id === location.id && ( // Show callout only for the selected marker
+              <Callout>
+                <View>
+                  <Text>ID: {location.id}</Text>
+                  <Text>Title: {location.name}</Text>
+                </View>
+              </Callout>
+            )}
+          </Marker>
         ))}
         {selectedCoordinate && (
           <Marker
             coordinate={selectedCoordinate}
             title="Selected Location"
             description={`Latitude: ${latitude}, Longitude: ${longitude}`}
+          />
+        )}
+        {markerId && selectedCoordinate && (
+          <Marker
+            coordinate={selectedCoordinate}
+            title="New Location"
+            description={`Latitude: ${latitude}, Longitude: ${longitude}`}
+            key={markerId}
           />
         )}
       </MapView>
@@ -228,13 +262,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 54,
     left: 0,
-    width: "40%", // Adjust the width as needed
-    height: "20%", // Half of the screen height
+    width: "40%",
+    height: "20%",
     backgroundColor: "#ABA2B0",
-    borderTopRightRadius: 1, // Sharper top right corner
-    borderBottomRightRadius: 12, // Sharper bottom right corner
-    borderTopLeftRadius: 1, // Rounded top left corner
-    borderBottomLeftRadius: 12, // Rounded bottom left corner
+    borderTopRightRadius: 1,
+    borderBottomRightRadius: 12,
+    borderTopLeftRadius: 1,
+    borderBottomLeftRadius: 12,
     elevation: 3,
     zIndex: 1000,
   },
@@ -250,8 +284,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   buttonActive: {
-    borderWidth: 2, // Add border when button is active (toggled on)
-    borderColor: "white", // Border color for the glow effect
+    borderWidth: 2,
+    borderColor: "white",
   },
   buttonText: {
     color: "white",
@@ -292,10 +326,10 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     position: "absolute",
-    top: "30%", // Adjust top position as needed
-    left: "10%", // Adjust left position as needed
-    width: "80%", // Adjust width as needed
-    height: "33%", // 1/3 of the screen height
+    top: "30%",
+    left: "10%",
+    width: "80%",
+    height: "33%",
     backgroundColor: "white",
     borderRadius: 8,
     padding: 20,
