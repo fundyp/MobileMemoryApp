@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from 'axios';
@@ -14,10 +14,12 @@ const fetchLocations = async (username) => {
   }
 };
 
+
+
 const Home = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { firstName } = route.params || {};
+  const { firstName, username } = route.params || {};
 
   const [locations, setLocations] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
@@ -27,7 +29,6 @@ const Home = () => {
   const [title, setTitle] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [username, setUsername] = useState('');
 
   const handleSignOut = () => {
     navigation.navigate("Login");
@@ -35,6 +36,10 @@ const Home = () => {
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
+  };
+
+  const handleUsernamePress = () => {
+    Alert.alert('Username', username); // Display the username in an alert box
   };
 
   const toggleAdding = () => {
@@ -55,7 +60,7 @@ const Home = () => {
     try {
       const response = await axios.post('https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api/locations', {
         title,
-        username, // Assuming you have stored the username somewhere accessible
+        username, // Use firstName from route.params as the username
         latitude,
         longitude,
       });
@@ -89,27 +94,18 @@ const Home = () => {
 
   const menuItems = [
     { id: 1, title: "Sign Out", onPress: handleSignOut },
+    { id: 2, title: "Username", onPress: handleUsernamePress },
     // Add more menu items here if needed
   ];
 
   useEffect(() => {
     const fetchLocationsData = async () => {
-      const fetchedLocations = await fetchLocations(firstName); // Assuming firstName is the username
+      const fetchedLocations = await fetchLocations(username); // Use firstName as the username
       setLocations(fetchedLocations);
     };
 
-    const fetchUsername = async () => {
-      try {
-        const response = await axios.get('https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api/login');
-        setUsername(response.data.username); // Assuming the username is in the response data
-      } catch (error) {
-        console.error('Error fetching username:', error);
-      }
-    };
-
     fetchLocationsData();
-    fetchUsername();
-  }, [firstName]);
+  }, [username]);
 
   return (
     <View style={styles.container}>
@@ -210,7 +206,6 @@ const Home = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

@@ -18,8 +18,8 @@ const Login = () => {
   const navigation = useNavigation();
 
   // Function to navigate to Home screen with user's first name as parameter
-  const goToHomePage = (firstName) => {
-    navigation.navigate("Home", { firstName });
+  const goToHomePage = (firstName, username) => {
+    navigation.navigate("Home", { firstName, username });
   };
 
   // Function to handle sign-in
@@ -39,13 +39,13 @@ const Login = () => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert("Success", "Sign-In successful!");
-
+  
           // Clear input fields after sign-up
           setEmail("");
           setPassword("");
-
-          // Call goToHomePage with user's first name
-          goToHomePage(data.firstName);
+  
+          // Call goToHomePage with user's first name and username
+          goToHomePage(data.firstName, data.username); // Pass username received from the API
         } else {
           Alert.alert("Error", data.error || "Sign-in failed. Please try again.");
         }
