@@ -54,10 +54,7 @@ const Home = () => {
         location.latitude === event.nativeEvent.coordinate.latitude.toString() &&
         location.longitude === event.nativeEvent.coordinate.longitude.toString()
       ));
-      if (selectedMarker) {
-        // Show popup when a marker is selected
-        Alert.alert('Marker Info', `ID: ${selectedMarker.id}, Title: ${selectedMarker.name}`);
-      }
+      
     } else {
       // Handle adding new marker when isAdding is true
       setSelectedCoordinate(event.nativeEvent.coordinate);
@@ -109,6 +106,8 @@ const Home = () => {
   };
 
   const handleMarkerPress = (marker) => {
+    console.log(marker.locationName);
+    console.log(marker.title);
     setSelectedMarker(marker); // Set the selected marker when it's pressed
   };
 
@@ -168,15 +167,16 @@ const Home = () => {
               latitude: parseFloat(location.latitude),
               longitude: parseFloat(location.longitude),
             }}
-            title={location.name}
+            title={location.title}
+            
             
             onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
           >
-            {selectedMarker && selectedMarker._id === location._id && ( // Show callout only for the selected marker
+            {selectedMarker && selectedMarker.locationName === location.locationName && ( // Show callout only for the selected marker
               <Callout>
                 <View>
                   <Text>ID: {location.locationName}</Text>
-                  <Text>Title: {location.name}</Text>
+                  <Text>Title: {location.title}</Text>
                 </View>
               </Callout>
             )}
