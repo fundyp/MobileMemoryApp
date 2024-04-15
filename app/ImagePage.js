@@ -29,7 +29,7 @@ const ImagePage = () => {
   };
 
   const handleAddImages = async () => {
-    
+    // Implement the logic to add images
   };
 
   const handleRemoveImages = async () => {
@@ -38,18 +38,14 @@ const ImagePage = () => {
 
   useEffect(() => {
     fetchImages();
-}, [markerId]); // Fetch images when markerId changes
+  }, [markerId]); // Fetch images when markerId changes
 
   return (
     <View style={styles.container}>
+      <View style={styles.topRow}>
+        <Button title="Go Back" onPress={handleBack} />
+      </View>
       <Text style={styles.title}>Title: {title}</Text>
-      {images && images.length > 0 ? (
-  images.map((image, index) => (
-    <Image key={index} source={{ uri: image.imageUrl }} style={styles.image} />
-  ))
-) : (
-  <Text>No images found.</Text>
-)}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleAddImages}>
           <Text style={styles.buttonText}>Add Images</Text>
@@ -58,7 +54,15 @@ const ImagePage = () => {
           <Text style={styles.buttonText}>Remove Images</Text>
         </TouchableOpacity>
       </View>
-      <Button title="Go Back" onPress={handleBack} />
+      {images && images.length > 0 ? (
+        <View style={styles.imageContainer}>
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.imageUrl }} style={styles.image} />
+          ))}
+        </View>
+      ) : (
+        <Text>No images found.</Text>
+      )}
     </View>
   );
 };
@@ -69,22 +73,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20, // Adjust as needed
   },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+    marginBottom: 10, // Added marginBottom for spacing
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '80%',
-    marginTop: 20,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#A66CC3',
@@ -96,6 +103,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  imageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  image: {
+    width: 150,
+    height: 150,
+    margin: 5,
   },
 });
 
