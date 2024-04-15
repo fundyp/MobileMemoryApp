@@ -119,6 +119,10 @@ const Home = () => {
 
   const handleImagesButton = () => {
     // Handle Images button press
+    navigation.navigate('ImagePage', {
+      locationId: selectedMarker.locationName,
+      locationName: selectedMarker.title,
+    });
     console.log("Images button pressed");
   };
 
