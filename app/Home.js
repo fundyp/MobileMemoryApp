@@ -87,6 +87,9 @@ const Home = () => {
       const updatedLocations = await fetchLocations(username);
       setLocations(updatedLocations);
 
+      console.log(locations);
+      
+
       setFormVisible(false);
       setTitle("");
       setLatitude(null);
@@ -118,10 +121,13 @@ const Home = () => {
     const fetchLocationsData = async () => {
       const fetchedLocations = await fetchLocations(username);
       setLocations(fetchedLocations);
+
+      console.log(locations)
     };
 
+    // allows initial fetch data from sign in
     fetchLocationsData();
-  }, [username, markerId]); // Include markerId in dependencies
+  }, [username]); // Include markerId in dependencies
 
   return (
     <View style={styles.container}>
@@ -157,40 +163,26 @@ const Home = () => {
       >
         {locations.map((location) => (
           <Marker
-            key={location.id}
+            key={location.locationName}
             coordinate={{
               latitude: parseFloat(location.latitude),
               longitude: parseFloat(location.longitude),
             }}
             title={location.name}
-            description={location.description}
+            
             onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
           >
-            {selectedMarker && selectedMarker.id === location.id && ( // Show callout only for the selected marker
+            {selectedMarker && selectedMarker._id === location._id && ( // Show callout only for the selected marker
               <Callout>
                 <View>
-                  <Text>ID: {location.id}</Text>
+                  <Text>ID: {location.locationName}</Text>
                   <Text>Title: {location.name}</Text>
                 </View>
               </Callout>
             )}
           </Marker>
         ))}
-        {selectedCoordinate && (
-          <Marker
-            coordinate={selectedCoordinate}
-            title="Selected Location"
-            description={`Latitude: ${latitude}, Longitude: ${longitude}`}
-          />
-        )}
-        {markerId && selectedCoordinate && (
-          <Marker
-            coordinate={selectedCoordinate}
-            title="New Location"
-            description={`Latitude: ${latitude}, Longitude: ${longitude}`}
-            key={markerId}
-          />
-        )}
+        
       </MapView>
       {formVisible && (
         <View style={styles.formContainer}>
