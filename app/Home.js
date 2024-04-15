@@ -111,7 +111,7 @@ const Home = () => {
     // Check if the add button is not toggled
     if (!isAdding) {
       console.log(marker.title);
-      console.log(marker.locationName);
+      console.log(marker._id);
       setSelectedMarker(marker); // Set the selected marker
       setModalVisible(true); // Show the modal
     }
@@ -120,8 +120,9 @@ const Home = () => {
   const handleImagesButton = () => {
     // Handle Images button press
     navigation.navigate('ImagePage', {
-      locationId: selectedMarker.locationName,
-      locationName: selectedMarker.title,
+      markerId: selectedMarker._id,
+      title: selectedMarker.title,
+      username: username,
     });
     console.log("Images button pressed");
   };
@@ -196,7 +197,7 @@ const Home = () => {
       >
         {locations.map((location) => (
           <Marker
-            key={location.locationName}
+            key={location._id}
             coordinate={{
               latitude: parseFloat(location.latitude),
               longitude: parseFloat(location.longitude),
@@ -253,7 +254,7 @@ const Home = () => {
       <CustomModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        locationName={selectedMarker?.locationName}
+        locationName={selectedMarker?._id}
         title={selectedMarker?.title}
       />
     </View>
