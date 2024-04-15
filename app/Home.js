@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps"; // Import Callout from react-native-maps
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from "react-native";
+import MapView, { Marker } from "react-native-maps"; // Import Callout from react-native-maps
 import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from 'axios';
 
@@ -29,6 +29,8 @@ const Home = () => {
   const [longitude, setLongitude] = useState(null);
   const [markerId, setMarkerId] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null); // State to track the selected marker
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleSignOut = () => {
     navigation.navigate("Login");
@@ -100,15 +102,33 @@ const Home = () => {
     }
   };
 
+  const CustomModal = ({ visible, onClose, locationName, title }) => (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text>ID: {locationName}</Text>
+          <Text>Title: {title}</Text>
+          <TouchableOpacity onPress={onClose}>
+            <Text>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   const handleCancel = () => {
     setFormVisible(false);
     setSelectedCoordinate(null);
   };
 
   const handleMarkerPress = (marker) => {
-    console.log(marker.locationName);
-    console.log(marker.title);
-    setSelectedMarker(marker); // Set the selected marker when it's pressed
+    // Check if the add button is not toggled
+    if (!isAdding) {
+      console.log(marker.title);
+      console.log(marker.locationName);
+      setSelectedMarker(marker); // Set the selected marker
+      setModalVisible(true); // Show the modal
+    }
   };
 
   const menuItems = [
@@ -167,19 +187,17 @@ const Home = () => {
               latitude: parseFloat(location.latitude),
               longitude: parseFloat(location.longitude),
             }}
-            title={location.title}
+            //title={location.title}
             
             
             onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
           >
-            {selectedMarker && selectedMarker.locationName === location.locationName && ( // Show callout only for the selected marker
-              <Callout>
-                <View>
-                  <Text>ID: {location.locationName}</Text>
-                  <Text>Title: {location.title}</Text>
-                </View>
-              </Callout>
-            )}
+            <CustomModal
+  visible={modalVisible}
+  onClose={() => setModalVisible(false)}
+  locationName={selectedMarker?.locationName}
+  title={selectedMarker?.title}
+/>
           </Marker>
         ))}
         
@@ -207,7 +225,7 @@ const Home = () => {
           />
           <View style={styles.formButtonContainer}>
             <TouchableOpacity style={styles.formButton} onPress={handleConfirm}>
-              <Text style={styles.formButtonText}>Confirm</Text>
+            <Text style={styles.formButtonText}>Confirm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.formButton} onPress={handleCancel}>
               <Text style={styles.formButtonText}>Cancel</Text>
@@ -354,6 +372,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+    elevation: 5,
   },
 });
 
