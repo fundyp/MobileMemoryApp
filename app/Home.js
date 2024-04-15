@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import MapView, { Marker } from "react-native-maps"; // Import Callout from react-native-maps
+import MapView, { Marker } from "react-native-maps"; // Import Marker from react-native-maps
 import { useRoute, useNavigation } from "@react-navigation/native";
 import axios from 'axios';
 
@@ -102,20 +102,6 @@ const Home = () => {
     }
   };
 
-  const CustomModal = ({ visible, onClose, locationName, title }) => (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text>ID: {locationName}</Text>
-          <Text>Title: {title}</Text>
-          <TouchableOpacity onPress={onClose}>
-            <Text>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
   const handleCancel = () => {
     setFormVisible(false);
     setSelectedCoordinate(null);
@@ -129,6 +115,11 @@ const Home = () => {
       setSelectedMarker(marker); // Set the selected marker
       setModalVisible(true); // Show the modal
     }
+  };
+
+  const handleImagesButton = () => {
+    // Handle Images button press
+    console.log("Images button pressed");
   };
 
   const menuItems = [
@@ -147,6 +138,25 @@ const Home = () => {
     // allows initial fetch data from sign in
     fetchLocationsData();
   }, [username]); // Include markerId in dependencies
+
+  const CustomModal = ({ visible, onClose, locationName, title }) => (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text>ID: {locationName}</Text>
+          <Text>Title: {title}</Text>
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity style={styles.modalButton} onPress={onClose}>
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={handleImagesButton}>
+              <Text style={styles.modalButtonText}>Images</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <View style={styles.container}>
@@ -187,20 +197,9 @@ const Home = () => {
               latitude: parseFloat(location.latitude),
               longitude: parseFloat(location.longitude),
             }}
-            //title={location.title}
-            
-            
             onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
-          >
-            <CustomModal
-  visible={modalVisible}
-  onClose={() => setModalVisible(false)}
-  locationName={selectedMarker?.locationName}
-  title={selectedMarker?.title}
-/>
-          </Marker>
+          />
         ))}
-        
       </MapView>
       {formVisible && (
         <View style={styles.formContainer}>
@@ -225,7 +224,7 @@ const Home = () => {
           />
           <View style={styles.formButtonContainer}>
             <TouchableOpacity style={styles.formButton} onPress={handleConfirm}>
-            <Text style={styles.formButtonText}>Confirm</Text>
+              <Text style={styles.formButtonText}>Confirm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.formButton} onPress={handleCancel}>
               <Text style={styles.formButtonText}>Cancel</Text>
@@ -233,7 +232,7 @@ const Home = () => {
           </View>
         </View>
       )}
-      <View style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, isAdding ? styles.buttonActive : null]}
           onPress={toggleAdding}
@@ -243,13 +242,20 @@ const Home = () => {
         <TouchableOpacity style={styles.button} onPress={() => console.log("Edit pressed")}>
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
+      <CustomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        locationName={selectedMarker?.locationName}
+        title={selectedMarker?.title}
+      />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -384,6 +390,33 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     elevation: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  modalButton: {
+    backgroundColor: "#A66CC3",
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 
