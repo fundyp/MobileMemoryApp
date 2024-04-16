@@ -1,5 +1,7 @@
+
+
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, TouchableOpacity, Platform, ScrollView, Modal } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios'; // Import axios for HTTP requests
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker for selecting images
@@ -9,9 +11,12 @@ const ImagePage = () => {
   const route = useRoute();
   const { markerId, title, username } = route.params;
 
+
   const navigation = useNavigation();
 
   const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null); // State to track selected image
+  const [modalVisible, setModalVisible] = useState(false); 
 
   const handleBack = () => {
     navigation.goBack();
@@ -107,12 +112,13 @@ const ImagePage = () => {
     fetchImages();
   }, [markerId]); // Fetch images when markerId changes
 
+
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
         <Button title="Go Back" onPress={handleBack} />
       </View>
-      <Text style={styles.title}>Title: {title}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleAddImages}>
           <Text style={styles.buttonText}>Add Images</Text>
@@ -121,15 +127,31 @@ const ImagePage = () => {
           <Text style={styles.buttonText}>Remove Images</Text>
         </TouchableOpacity>
       </View>
-      {images && images.length > 0 ? (
-        <View style={styles.imageContainer}>
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.imageUrl }} style={styles.image} />
-          ))}
+      <ScrollView contentContainerStyle={styles.imageContainer}>
+        <View style={styles.imageRow}>
+          {images && images.length > 0 ? (
+            images.map((image, index) => (
+              <TouchableOpacity key={index} onPress={() => {
+                setSelectedImage(image.imageUrl);
+                setModalVisible(true);
+              }}>
+                <Image source={{ uri: image.imageUrl }} style={styles.image} />
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text>No images found.</Text>
+          )}
         </View>
-      ) : (
-        <Text>No images found.</Text>
-      )}
+      </ScrollView>
+      {/* Modal for displaying enlarged image */}
+      <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+          <Image source={{ uri: selectedImage }} style={styles.modalImage} />
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -172,15 +194,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   imageContainer: {
+    alignItems: 'center', // Center images vertically
+    marginBottom: 20,
+  },
+  imageRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: 20,
   },
   image: {
-    width: 150,
+    width: 185,
     height: 150,
     margin: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    right: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    backgroundColor: '#A66CC3',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalImage: {
+    width: '80%',
+    height: '80%',
+    resizeMode: 'contain',
   },
 });
 
