@@ -4,10 +4,11 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios'; // Import axios for HTTP requests
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker for selecting images
 import Constants from 'expo-constants';
+import ActionBar from './ActionBar';
 
 const ImagePage = () => {
   const route = useRoute();
-  const { markerId, title, username } = route.params;
+  const { markerId, title, username, firstName } = route.params;
 
   const navigation = useNavigation();
 
@@ -117,9 +118,8 @@ const ImagePage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topRow}>
-        <Button title="Go Back" onPress={handleBack} />
-      </View>
+      <ActionBar title={`${firstName}'s Memory Map`} onMenuPress={handleBack} />
+      
       <Text style={styles.title}>{title}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleAddImages}>
@@ -142,7 +142,7 @@ const ImagePage = () => {
               </TouchableOpacity>
             ))
           ) : (
-            <Text>No images found.</Text>
+            <Text style={{ color: 'white' }}>No images found.</Text>
           )}
         </View>
       </ScrollView>
@@ -168,8 +168,9 @@ const ImagePage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#130F15', 
     alignItems: 'center',
-    paddingTop: 20, // Adjust as needed
+    paddingTop: 0, // Adjust as needed
   },
   topRow: {
     flexDirection: 'row',
@@ -180,10 +181,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginTop: 30,
     marginBottom: 10, // Added marginBottom for spacing
+    color: 'white',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -212,9 +215,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: 185,
-    height: 150,
-    margin: 5,
+    width: 208,
+    height: 180,
+    margin: 2,
   },
   modalContainer: {
     flex: 1,
@@ -234,7 +237,7 @@ const styles = StyleSheet.create({
   leftButton: {
     position: 'absolute',
     top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
-    left: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    left: '2%', // Adjust as needed, e.g., '10%', '15%', etc.
     backgroundColor: '#A66CC3',
     borderRadius: 6,
     paddingHorizontal: 10,
@@ -243,7 +246,7 @@ const styles = StyleSheet.create({
   rightButton: {
     position: 'absolute',
     top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
-    right: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    right: '2%', // Adjust as needed, e.g., '10%', '15%', etc.
     backgroundColor: '#A66CC3',
     borderRadius: 6,
     paddingHorizontal: 10,
@@ -251,7 +254,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   modalImage: {
@@ -259,6 +262,7 @@ const styles = StyleSheet.create({
     height: '80%',
     resizeMode: 'contain',
   },
+  
 });
 
 export default ImagePage;

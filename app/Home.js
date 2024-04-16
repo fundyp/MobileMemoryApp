@@ -123,6 +123,7 @@ const Home = () => {
       markerId: selectedMarker._id,
       title: selectedMarker.title,
       username: username,
+      firstName: firstName,
     });
     console.log("Images button pressed");
   };
