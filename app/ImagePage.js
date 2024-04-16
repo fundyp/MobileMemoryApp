@@ -115,11 +115,42 @@ const ImagePage = () => {
   const handleRemoveButton = async () => {
     setRemoveImages(!removeImages);
   };
+
+  // connects to endpoint and deletes one image at a time
+  const deleteOnePic = async (imageId) => {
+    try {
+      const response = await axios.delete(`https://cop4331-g6-lp-c6d624829cab.herokuapp.com/posts/${imageId}`);
+      console.log(response.data); // Log the response if needed
+    } catch (error) {
+      console.error('Error deleting image:', error);
+    }
+  };
+
+  const handleRemoveImages = async () => {
+    try {
+      console.log('delete image button pressed');
+  
+      // Iterate through selectedToRemove and delete one image at a time
+      for (const image of selectedToRemove) {
+        await deleteOnePic(image._id);
+      }
+  
+      // Clear the selected images
+      setSelectedToRemove([]);
+  
+      // Refresh images after deletion
+      fetchImages();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  /*
   const handleRemoveImages = async () => {
     // Implement the logic to remove images
     //setRemoveImages(!removeImages);
     console.log('delete image button pressed');
-  };
+  }; */
 
   useEffect(() => {
     fetchImages();
