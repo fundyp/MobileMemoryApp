@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#130F15', 
     alignItems: 'center',
-    paddingTop: 0, // Adjust as needed
+    paddingTop: 0, 
   },
   topRow: {
     flexDirection: 'row',
@@ -292,8 +292,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
-    right: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    top: '5%', 
+    right: '5%',
     backgroundColor: '#A66CC3',
     borderRadius: 6,
     paddingHorizontal: 10,
@@ -301,8 +301,8 @@ const styles = StyleSheet.create({
   },
   leftButton: {
     position: 'absolute',
-    top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
-    left: '2%', // Adjust as needed, e.g., '10%', '15%', etc.
+    top: '50%', 
+    left: '2%', 
     backgroundColor: '#A66CC3',
     borderRadius: 6,
     paddingHorizontal: 10,
@@ -310,8 +310,8 @@ const styles = StyleSheet.create({
   },
   rightButton: {
     position: 'absolute',
-    top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
-    right: '2%', // Adjust as needed, e.g., '10%', '15%', etc.
+    top: '50%', 
+    right: '2%', 
     backgroundColor: '#A66CC3',
     borderRadius: 6,
     paddingHorizontal: 10,
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: 1, // Ensure the delete button is above the add button
-    backgroundColor: 'red', // Customize the color as needed
+    backgroundColor: 'red', 
     alignItems: 'center',
     justifyContent: 'center',
   },
