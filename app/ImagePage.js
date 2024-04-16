@@ -17,7 +17,9 @@ const ImagePage = () => {
   const [modalVisible, setModalVisible] = useState(false); 
   const [selectedIndex, setSelectedIndex] = useState(0); // State to track selected image index
 
+  // this is more of a boolean than anything else, will be true when remove button is toggled
   const [removeImages, setRemoveImages] = useState(false);
+  const [selectedToRemove, setSelectedToRemove] = useState([]);
   
   const handleBack = () => {
     navigation.goBack();
@@ -149,15 +151,20 @@ const ImagePage = () => {
           {images && images.length > 0 ? (
             images.map((image, index) => (
               <TouchableOpacity key={index} onPress={() => {
-                setSelectedImage(image.imageUrl);
-                setSelectedIndex(index);
-                setModalVisible(true);
+                if(removeImages) {
+                  setSelectedToRemove([...selectedToRemove, image]);
+                }
+                else {
+                  setSelectedImage(image.imageUrl);
+                  setSelectedIndex(index);
+                  setModalVisible(true);
+                }
               }}>
                 <Image source={{ uri: image.imageUrl }} style={styles.image} />
               </TouchableOpacity>
             ))
           ) : (
-            <Text style={{ color: 'white' }}>No images found.</Text>
+            <Text style={{ color: 'white' }}>No Images :C</Text>
           )}
         </View>
       </ScrollView>
