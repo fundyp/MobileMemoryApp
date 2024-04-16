@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Button, StyleSheet, TouchableOpacity, Platform, ScrollView, Modal } from 'react-native';
+import { View, Text, Image, Button, StyleSheet, TouchableOpacity, Platform, ScrollView, Modal, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios'; // Import axios for HTTP requests
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker for selecting images
@@ -42,7 +42,7 @@ const ImagePage = () => {
       setImages(data); // Assuming data is an array of image objects with an 'imageUrl' property
       //setImages(response.data); // Assuming data is an array of image objects with an 'imageUrl' property
 
-      //console.log('the fetch images response is: ', data);
+      
     } catch (error) {
       console.error('Error fetching images:', error);
     }
@@ -52,7 +52,7 @@ const ImagePage = () => {
     // Check permissions for accessing camera roll
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      console.log('Permission status:', status);
+      //console.log('Permission status:', status);
 
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!');
@@ -68,8 +68,8 @@ const ImagePage = () => {
       quality: 1,
     });
 
-    console.log('Selected image:', result);
-    console.log('Selected image type:', result.assets[0].type);
+    //console.log('Selected image:', result);
+    //console.log('Selected image type:', result.assets[0].type);
 
     if (!result.cancelled) {
       let localUri = result.assets[0].uri;
@@ -92,18 +92,12 @@ const ImagePage = () => {
       formData.append('username', username);
       formData.append('locationId', markerId);
 
-      console.log();
-      console.log('formData info:', formData);
-      console.log('formData Image information:', formData.image);
-
       try {
         const response = await axios.post('https://cop4331-g6-lp-c6d624829cab.herokuapp.com/posts', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        //console.log(); // new line
-        //console.log('Upload response:', response.data);
         // Refresh images after upload
         fetchImages();
       } catch (error) {
@@ -116,11 +110,18 @@ const ImagePage = () => {
     setRemoveImages(!removeImages);
   };
 
+  useEffect(() => {
+    // Reset selectedToRemove when removeImages is set to false
+    if (!removeImages) {
+      setSelectedToRemove([]);
+    }
+  }, [removeImages]);
+
   // connects to endpoint and deletes one image at a time
   const deleteOnePic = async (imageId) => {
     try {
       const response = await axios.delete(`https://cop4331-g6-lp-c6d624829cab.herokuapp.com/posts/${imageId}`);
-      console.log(response.data); // Log the response if needed
+      
     } catch (error) {
       console.error('Error deleting image:', error);
     }
@@ -128,29 +129,33 @@ const ImagePage = () => {
 
   const handleRemoveImages = async () => {
     try {
-      console.log('delete image button pressed');
-  
-      // Iterate through selectedToRemove and delete one image at a time
-      for (const image of selectedToRemove) {
-        await deleteOnePic(image._id);
-      }
-  
-      // Clear the selected images
-      setSelectedToRemove([]);
-  
-      // Refresh images after deletion
-      fetchImages();
+      Alert.alert(
+        'Confirm Deletion',
+        'Are you sure you want to delete the selected images?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Delete',
+            onPress: async () => {
+              
+              for (const image of selectedToRemove) {
+                await deleteOnePic(image._id);
+              }
+              setSelectedToRemove([]);
+              fetchImages();
+            },
+            style: 'destructive',
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
-  /*
-  const handleRemoveImages = async () => {
-    // Implement the logic to remove images
-    //setRemoveImages(!removeImages);
-    console.log('delete image button pressed');
-  }; */
 
   useEffect(() => {
     fetchImages();
