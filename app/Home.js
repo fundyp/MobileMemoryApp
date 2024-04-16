@@ -360,6 +360,7 @@ const Home = () => {
               longitude: parseFloat(location.longitude),
             }}
             onPress={() => handleMarkerPress(location)} // Call handleMarkerPress on marker press
+            pinColor={isMoving &&isEditing && location._id === selectedMarker?._id ? 'red' : 'blue'}
           />
         ))}
       </MapView>
