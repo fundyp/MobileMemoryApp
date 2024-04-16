@@ -24,6 +24,7 @@ const Home = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedCoordinate, setSelectedCoordinate] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
+  const [formTwoVisible, setFormTwoVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -61,8 +62,12 @@ const Home = () => {
 
   };
 
+  // handles all map presses including map right after add button and edit button
+  // are selected
   const handleMapPress = (event) => {
-    if (!isAdding) {
+
+
+    if (!isAdding && !isMoving) {
       // Handle marker selection here
       const selectedMarker = locations.find((location) => (
         location.latitude === event.nativeEvent.coordinate.latitude.toString() &&
@@ -74,9 +79,26 @@ const Home = () => {
       setSelectedCoordinate(event.nativeEvent.coordinate);
       setLatitude(event.nativeEvent.coordinate.latitude.toString());
       setLongitude(event.nativeEvent.coordinate.longitude.toString());
-      setFormVisible(true);
+
+      if(isMoving){
+        setFormTwoVisible(true);
+      }
+      else{
+        setFormVisible(true);
+      }
+
+    
     }
   };
+
+
+  // the confirm for moveing marker
+  const handleMoveConfirm = (event) => {
+
+    setIsMoving(!isMoving);
+    setFormTwoVisible(false);
+  };
+
 
   const handleConfirm = async () => {
     try {
@@ -114,13 +136,18 @@ const Home = () => {
     }
   };
 
+
   const handleCancel = () => {
     setFormVisible(false);
+    setFormTwoVisible(false); 
+    setIsMoving(false);
     setSelectedCoordinate(null);
   };
 
   // called in handleMarkerPress -> CustomModalTwo 
   const handleMoveMarker = () => {
+    setModalTwoVisible(false);
+    setIsMoving(true);
   }
 
   // called in handleMarkerPress -> CustomModalTwo
@@ -171,6 +198,10 @@ const Home = () => {
   }
 
   const handleMarkerPress = (marker) => {
+    // if we are moving we dont want to select another pin
+    if (isMoving) {
+      return;
+    }
     // Check if the add button is not toggled
     if(isEditing) {
       setSelectedMarker(marker);
@@ -306,6 +337,7 @@ const Home = () => {
           />
         ))}
       </MapView>
+
       {formVisible && (
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Creating New Memory...</Text>
@@ -337,6 +369,39 @@ const Home = () => {
           </View>
         </View>
       )}
+
+      {formTwoVisible && (
+        <View style={styles.formContainer}>
+          <Text style={styles.formTitle}>Moving Marker...</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Title 2"
+            value={title}
+            onChangeText={(text) => setTitle(text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Latitude"
+            value={latitude}
+            onChangeText={(text) => setLatitude(text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Longitude"
+            value={longitude}
+            onChangeText={(text) => setLongitude(text)}
+          />
+          <View style={styles.formButtonContainer}>
+            <TouchableOpacity style={styles.formButton} onPress={handleMoveConfirm}>
+              <Text style={styles.formButtonText}>Confirm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.formButton} onPress={handleCancel}>
+              <Text style={styles.formButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       <TouchableOpacity style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, isAdding ? styles.buttonActive : null]}
