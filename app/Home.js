@@ -73,6 +73,8 @@ const Home = () => {
         location.latitude === event.nativeEvent.coordinate.latitude.toString() &&
         location.longitude === event.nativeEvent.coordinate.longitude.toString()
       ));
+
+      
       
     } else {
       // Handle adding new marker when isAdding is true
@@ -81,7 +83,12 @@ const Home = () => {
       setLongitude(event.nativeEvent.coordinate.longitude.toString());
 
       if(isMoving){
-        setFormTwoVisible(true);
+        
+          setSelectedMarker(selectedMarker);
+          setFormTwoVisible(true);
+          setTitle(selectedMarker.title); // Set the title of the marker
+        
+        //setFormTwoVisible(true);
       }
       else{
         setFormVisible(true);
@@ -93,10 +100,29 @@ const Home = () => {
 
 
   // the confirm for moveing marker
-  const handleMoveConfirm = (event) => {
-
-    setIsMoving(!isMoving);
-    setFormTwoVisible(false);
+  const handleMoveConfirm = async () => {
+    try {
+      const response = await axios.put(`https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api/locations/${selectedMarker._id}`, {
+        latitude, // Assuming latitude and longitude are already set in state
+        longitude,
+      });
+  
+      console.log(response.data); // Log the response from the server
+  
+      // Update the selected marker's coordinates in the locations state
+      const updatedLocations = locations.map((location) => {
+        if (location._id === selectedMarker._id) {
+          return { ...location, latitude, longitude };
+        }
+        return location;
+      });
+      setLocations(updatedLocations);
+  
+      setFormTwoVisible(false); // Hide the form after successful update
+    } catch (error) {
+      console.error('Error updating location:', error);
+      // Handle the error accordingly
+    }
   };
 
 
