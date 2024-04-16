@@ -30,7 +30,12 @@ const Home = () => {
   const [markerId, setMarkerId] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null); // State to track the selected marker
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalOneVisible, setModalOneVisible] = useState(false);
+  const [modalTwoVisible, setModalTwoVisible] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [isMoving, setIsMoving] = useState(false);
 
   const handleSignOut = () => {
     navigation.navigate("Login");
@@ -47,6 +52,13 @@ const Home = () => {
   const toggleAdding = () => {
     setIsAdding(!isAdding);
     setFormVisible(false);
+    setIsEditing(false);
+  };
+
+  const toggleEditing = () => {
+    setIsEditing(!isEditing);
+    setIsAdding(false);
+
   };
 
   const handleMapPress = (event) => {
@@ -107,13 +119,68 @@ const Home = () => {
     setSelectedCoordinate(null);
   };
 
+  // called in handleMarkerPress -> CustomModalTwo 
+  const handleMoveMarker = () => {
+  }
+
+  // called in handleMarkerPress -> CustomModalTwo
+  const handleDeleteMarker = () => {
+    console.log('delete marker is being called');
+
+    try {
+      Alert.alert(
+        'Are you sure you want to delete this memory?', // Title
+        '', // Message (empty in this case)
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Delete',
+            onPress: async () => {
+              // reach delete marker endpoint
+              // Assuming selectedMarker._id contains the id of the location to delete
+              let tempLocationId = selectedMarker._id;
+
+              fetch(`https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api/locations/${tempLocationId}`, {
+                method: 'DELETE',
+              })
+              .then(response => response.text())
+              .then(async message => {
+                console.log(message);
+
+                // Fetch the updated locations after the DELETE request has completed
+                let fetchedLocations = await fetchLocations(username);
+                setLocations(fetchedLocations);
+
+                // cleaner look to remove the modal from view
+                setModalTwoVisible(false);
+              })
+              .catch(error => console.error('An error occurred:', error));
+            },
+                        style: 'destructive',
+          },
+        ],
+        { cancelable: false }
+      );
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   const handleMarkerPress = (marker) => {
     // Check if the add button is not toggled
-    if (!isAdding) {
+    if(isEditing) {
+      setSelectedMarker(marker);
+      setModalTwoVisible(true);
+    }
+    if (!isAdding && !isEditing) {
       console.log(marker.title);
       console.log(marker._id);
       setSelectedMarker(marker); // Set the selected marker
-      setModalVisible(true); // Show the modal
+      setModalOneVisible(true); // Show the modal
     }
   };
 
@@ -143,20 +210,52 @@ const Home = () => {
 
     // allows initial fetch data from sign in
     fetchLocationsData();
-  }, [username]); // Include markerId in dependencies
+  }, [username]); 
 
-  const CustomModal = ({ visible, onClose, locationName, title }) => (
+  const CustomModal = ({ visible, onClose, latitude, longitude, title }) => (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text>ID: {locationName}</Text>
+          
           <Text>Title: {title}</Text>
+          <Text>Latitude: {latitude}</Text>
+          <Text>Longitude: {longitude}</Text>
+
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity style={styles.modalButton} onPress={onClose}>
               <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalButton} onPress={handleImagesButton}>
               <Text style={styles.modalButtonText}>Images</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const CustomModalTwo = ({ visible, onClose, latitude, longitude, title }) => (
+    <Modal visible={visible} transparent animationType="fade">
+      
+
+      <View style={styles.modalContainer}>
+
+      <TouchableOpacity style={styles.modalTwoBackButton} onPress={onClose}>
+              <Text style={styles.modalButtonText}>x</Text>
+      </TouchableOpacity>
+
+        <View style={styles.modalContent}>
+          
+          <Text>Title: {title}</Text>
+          <Text>Latitude: {latitude}</Text>
+          <Text>Longitude: {longitude}</Text>
+
+          <View style={styles.modalTwoButtonContainer}>
+            <TouchableOpacity style={styles.modalTwoDeleteButton} onPress={handleDeleteMarker}>
+              <Text style={styles.modalButtonText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalTwoMoveButton} onPress={handleMoveMarker}>
+              <Text style={styles.modalButtonText}>Move</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -245,7 +344,11 @@ const Home = () => {
         >
           <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => console.log("Edit pressed")}>
+
+        <TouchableOpacity 
+          style={[styles.button, isEditing ? styles.buttonActive : null]} 
+          onPress= {toggleEditing}
+          >
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -253,9 +356,17 @@ const Home = () => {
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
       <CustomModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        locationName={selectedMarker?._id}
+        visible={modalOneVisible}
+        onClose={() => setModalOneVisible(false)}
+        latitude={selectedMarker?.latitude}
+        longitude={selectedMarker?.longitude}
+        title={selectedMarker?.title}
+      />
+      <CustomModalTwo
+        visible={modalTwoVisible}
+        onClose={() => setModalTwoVisible(false)}
+        latitude={selectedMarker?.latitude}
+        longitude={selectedMarker?.longitude}
         title={selectedMarker?.title}
       />
     </View>
@@ -420,6 +531,59 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modalButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+
+  modalTwoContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalTwoContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+    elevation: 5,
+  },
+  modalTwoContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalTwoContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 8,
+  },
+  modalTwoButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  modalTwoDeleteButton: {
+    backgroundColor: '#800D3B',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalTwoMoveButton: {
+    backgroundColor: '#1F609C',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalTwoBackButton: { 
+    backgroundColor: '#A66CC3',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  modalTwoButtonText: {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
