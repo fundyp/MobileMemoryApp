@@ -47,7 +47,7 @@ const SignUp = () => {
           setPassword("");
           // go to home and pass down userID and the first name that was inserted (not retrieved from database)
           navigation.navigate("Home", {
-            userId: data.userId,
+            username: username,
             firstName: firstName,
           });
         } else {
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#130F15", // Change background color to black
+    backgroundColor: "#130F15", 
     marginTop: -100,
     marginBottom: -100,
   },
