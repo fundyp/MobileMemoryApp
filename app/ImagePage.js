@@ -177,13 +177,19 @@ const ImagePage = () => {
           <Text style={styles.buttonText}>Remove Images</Text>
         </TouchableOpacity>
       </View>
+
+
       <ScrollView contentContainerStyle={styles.imageContainer}>
         <View style={styles.imageRow}>
           {images && images.length > 0 ? (
             images.map((image, index) => (
               <TouchableOpacity key={index} onPress={() => {
                 if(removeImages) {
-                  setSelectedToRemove([...selectedToRemove, image]);
+                  if(selectedToRemove.includes(image)) {
+                    setSelectedToRemove(selectedToRemove.filter(item => item !== image));
+                  } else {
+                    setSelectedToRemove([...selectedToRemove, image]);
+                  }
                 }
                 else {
                   setSelectedImage(image.imageUrl);
@@ -191,7 +197,8 @@ const ImagePage = () => {
                   setModalVisible(true);
                 }
               }}>
-                <Image source={{ uri: image.imageUrl }} style={styles.image} />
+                <Image source={{ uri: image.imageUrl }} 
+                style={[styles.image, selectedToRemove.includes(image) && styles.grayedImage]} />
               </TouchableOpacity>
             ))
           ) : (
@@ -199,6 +206,7 @@ const ImagePage = () => {
           )}
         </View>
       </ScrollView>
+
       {/* Modal for displaying enlarged image */}
       <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
@@ -348,8 +356,19 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#800D3B',
-    // ... other styles ...
+    
   },
+
+  grayedImage: {
+    width: 208,
+    height: 180,
+    margin: 2,
+    opacity: 0.1, // Adjust opacity to control the level of grayness
+  },
+
+  grayOut: {
+    tintColor: '#808080'
+  }
   
 });
 
