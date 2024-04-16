@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Button, StyleSheet, TouchableOpacity, Platform, ScrollView, Modal } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -11,15 +9,25 @@ const ImagePage = () => {
   const route = useRoute();
   const { markerId, title, username } = route.params;
 
-
   const navigation = useNavigation();
 
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null); // State to track selected image
   const [modalVisible, setModalVisible] = useState(false); 
+  const [selectedIndex, setSelectedIndex] = useState(0); // State to track selected image index
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const handlePreviousImage = () => {
+    setSelectedImage(images[selectedIndex === 0 ? images.length - 1 : selectedIndex - 1]?.imageUrl);
+    setSelectedIndex(prevIndex => prevIndex === 0 ? images.length - 1 : prevIndex - 1);
+  };
+  
+  const handleNextImage = () => {
+    setSelectedImage(images[(selectedIndex + 1) % images.length]?.imageUrl);
+    setSelectedIndex(prevIndex => (prevIndex + 1) % images.length);
   };
 
   const fetchImages = async () => {
@@ -55,33 +63,29 @@ const ImagePage = () => {
       quality: 1,
     });
 
-    
-
     console.log('Selected image:', result);
     console.log('Selected image type:', result.assets[0].type);
 
     if (!result.cancelled) {
       let localUri = result.assets[0].uri;
-    //let filename = localUri.split('/').pop();
+      let filename = 'image.jpg'; // Default filename if localUri is undefined or null
 
-    let filename = 'image.jpg'; // Default filename if localUri is undefined or null
+      if (localUri) {
+        let uriParts = localUri.split('/');
+        filename = uriParts.pop();
+      }
+      console.log('filename is: ',filename);
 
-    if (localUri) {
-      let uriParts = localUri.split('/');
-      filename = uriParts.pop();
-    }
-    console.log('filename is: ',filename);
+      // Infer the type of the image
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
 
-    // Infer the type of the image
-    let match = /\.(\w+)$/.exec(filename);
-    let type = match ? `image/${match[1]}` : `image`;
-
-    // Upload the selected image(s) to the server
-    const formData = new FormData();
-    formData.append('image', {uri: result.assets[0].uri, type: result.assets[0].type, name: filename});
-    formData.append('caption', 'Image caption'); // Add caption if needed
-    formData.append('username', username);
-    formData.append('locationId', markerId);
+      // Upload the selected image(s) to the server
+      const formData = new FormData();
+      formData.append('image', {uri: result.assets[0].uri, type: result.assets[0].type, name: filename});
+      formData.append('caption', 'Image caption'); // Add caption if needed
+      formData.append('username', username);
+      formData.append('locationId', markerId);
 
       console.log();
       console.log('formData info:', formData);
@@ -103,7 +107,6 @@ const ImagePage = () => {
     }
   };
 
-
   const handleRemoveImages = async () => {
     // Implement the logic to remove images
   };
@@ -111,7 +114,6 @@ const ImagePage = () => {
   useEffect(() => {
     fetchImages();
   }, [markerId]); // Fetch images when markerId changes
-
 
   return (
     <View style={styles.container}>
@@ -133,6 +135,7 @@ const ImagePage = () => {
             images.map((image, index) => (
               <TouchableOpacity key={index} onPress={() => {
                 setSelectedImage(image.imageUrl);
+                setSelectedIndex(index);
                 setModalVisible(true);
               }}>
                 <Image source={{ uri: image.imageUrl }} style={styles.image} />
@@ -146,10 +149,16 @@ const ImagePage = () => {
       {/* Modal for displaying enlarged image */}
       <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
+          <TouchableOpacity style={styles.leftButton} onPress={handlePreviousImage}>
+            <Text style={styles.buttonText}>{"<"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.rightButton} onPress={handleNextImage}>
+            <Text style={styles.buttonText}>{">"}</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
-          <Image source={{ uri: selectedImage }} style={styles.modalImage} />
+          <Image source={{ uri: images[selectedIndex]?.imageUrl }} style={styles.modalImage} />
         </View>
       </Modal>
     </View>
@@ -216,6 +225,24 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    right: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    backgroundColor: '#A66CC3',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  leftButton: {
+    position: 'absolute',
+    top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
+    left: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
+    backgroundColor: '#A66CC3',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  rightButton: {
+    position: 'absolute',
+    top: '50%', // Adjust as needed, e.g., '40%', '45%', etc.
     right: '5%', // Adjust as needed, e.g., '10%', '15%', etc.
     backgroundColor: '#A66CC3',
     borderRadius: 6,
