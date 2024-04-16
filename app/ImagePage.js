@@ -17,6 +17,8 @@ const ImagePage = () => {
   const [modalVisible, setModalVisible] = useState(false); 
   const [selectedIndex, setSelectedIndex] = useState(0); // State to track selected image index
 
+  const [removeImages, setRemoveImages] = useState(false);
+  
   const handleBack = () => {
     navigation.goBack();
   };
@@ -108,8 +110,13 @@ const ImagePage = () => {
     }
   };
 
+  const handleRemoveButton = async () => {
+    setRemoveImages(!removeImages);
+  };
   const handleRemoveImages = async () => {
     // Implement the logic to remove images
+    //setRemoveImages(!removeImages);
+    console.log('delete image button pressed');
   };
 
   useEffect(() => {
@@ -122,10 +129,18 @@ const ImagePage = () => {
       
       <Text style={styles.title}>{title}</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleAddImages}>
-          <Text style={styles.buttonText}>Add Images</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleRemoveImages}>
+      <TouchableOpacity
+        style={[styles.button, removeImages ? styles.deleteButton : null]}
+        onPress={removeImages ? handleRemoveImages : handleAddImages}
+      >
+        <Text style={styles.buttonText}>{removeImages ? 'Delete' : 'Add Images'}</Text>
+      </TouchableOpacity>
+
+        
+        <TouchableOpacity
+          style={[styles.button, removeImages && styles.activeButton]} // Apply active style when removeImages is true
+          onPress={handleRemoveButton} // Always call handleRemoveImages when "Remove Images" button is pressed
+        >
           <Text style={styles.buttonText}>Remove Images</Text>
         </TouchableOpacity>
       </View>
@@ -197,13 +212,17 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#A66CC3',
     borderRadius: 6,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingVertical: 10,
+    paddingTop: 15,
+    width: 160,
+    height: 50,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   imageContainer: {
     alignItems: 'center', // Center images vertically
@@ -261,6 +280,37 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
     resizeMode: 'contain',
+  },
+  activeButton: {
+    borderWidth: 2,
+    borderColor: 'white',
+    borderRadius: 6,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    paddingTop: 15,
+    width: 160,
+    height: 50,
+  },
+  activeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 1, // Ensure the delete button is above the add button
+    backgroundColor: 'red', // Customize the color as needed
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#800D3B',
+    // ... other styles ...
   },
   
 });
