@@ -332,6 +332,9 @@ const Home = () => {
         <View style={styles.actionBarTextContainer}>
           <Text style={styles.actionBarText}>{firstName}'s Memory Map</Text>
         </View>
+
+        
+
       </View>
       {showMenu && (
         <View style={styles.dropdown}>

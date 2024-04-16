@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, StyleSheet } from "react-native"; // Import Image from "react-native"
 import { useNavigation } from "@react-navigation/native";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-} from "react-native";
 import { COLORS, SIZES } from "../constants"; // Import constants
 
 const apiURL = "https://cop4331-g6-lp-c6d624829cab.herokuapp.com/api";
@@ -38,12 +31,12 @@ const Login = () => {
         });
         const data = await response.json();
         if (response.ok) {
-          Alert.alert("Success", "Sign-In successful!");
-  
+          //Alert.alert("Success", "Sign-In successful!");
+
           // Clear input fields after sign-up
           setEmail("");
           setPassword("");
-  
+
           // Call goToHomePage with user's first name and username
           goToHomePage(data.firstName, data.username); // Pass username received from the API
         } else {
@@ -60,6 +53,10 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../constants/memMapLogo.png")} // Adjust the path to your image file
+        style={styles.logo}
+      />
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={[styles.input, email ? styles.filledInput : null]}
@@ -75,6 +72,13 @@ const Login = () => {
         value={password}
         secureTextEntry
       />
+      <View style={styles.signUpContainerTwo}>
+      <Text style={styles.signUpText}>Forgot Password? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPass")}>
+          <Text style={[styles.signUpLink, {color: "#CD85F0"}]}>Reset Password</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -94,7 +98,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black", // Change background color to black
+    backgroundColor: "#130F15", // Change background color to black
+    marginTop: -100,
+    marginBottom: -100,
   },
   label: {
     color: "white", // Change label text color to white
@@ -131,12 +137,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
   },
+  signUpContainerTwo: {
+    flexDirection: "row",
+    marginTop: 0,
+    marginBottom: 10,
+  },
   signUpText: {
     color: "white",
     fontSize: SIZES.body3,
   },
   signUpLink: {
     textDecorationLine: "underline",
+  },
+  logo: {
+    width: 220,
+    height: 200,
+    marginBottom: 100,
   },
 });
 

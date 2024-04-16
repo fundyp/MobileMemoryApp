@@ -124,7 +124,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black",
+    backgroundColor: "#130F15", // Change background color to black
+    marginTop: -100,
+    marginBottom: -100,
   },
   label: {
     color: "white",
